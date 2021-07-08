@@ -37,7 +37,7 @@ struct BinNode{
     int size();
     BinNodePosi(T) insertAsLC(T const&);
     BinNodePosi(T) insertAsRC(T const&);
-    BinNodePosi(T) succ(T const&);
+    BinNodePosi(T) succ();
     template <typename VST> void travLevel ( VST& ); //子树层次遍历
     template <typename VST> void travPre ( VST& );//子树先序遍历
     template <typename VST> void travIn ( VST& );//子树中序遍历
