@@ -1,5 +1,6 @@
 #include "BinNode.h"
-#include "Stack.h"
+#include "../Ch04-StackQueue/Stack.h"
+#include "../Ch04-StackQueue/Queue.h"
 
 template <typename T>
 class BinTree{
@@ -318,6 +319,23 @@ void travPost_I(BinNodePosi(T) x, VST& visit){
         }
         x = S.pop();
         visit(x->data);
+    }
+}
+
+template <typename T>
+template <typename VST>
+void BinNode<T>::travLevel(VST& visit){
+    Queue<BinNodePosi(T)> Q;
+    Q.enqueue(this);
+    while(!Q.empty()){
+        BinNodePosi(T) x = Q.dequeue();
+        visit(x->data);
+        if(HasLChild(*x)){
+            Q.enqueue(x->lc);
+        }
+        if(HasRChild(*x)){
+            Q.enqueue(x->rc);
+        }
     }
 }
 
