@@ -1,4 +1,5 @@
 #include "../Ch02-Vector/Vector.h"
+#include "../Ch04-StackQueue/Queue.h"
 #include "Graph.h"
 
 template <typename Tv> struct Vertex{
@@ -50,7 +51,7 @@ class GraphMatrix : public Graph<Tv, Te>{
         return nextNbr(i, n);
     }
 
-    virtual int nextNbr(int i, int j){
+    virtual int nextNbr(int i, int j){//相对于顶点j的下一临接顶点（改用邻接表可以提高效率）
         while((-1 < j) && (!exists(i, --j)));
         return j;
     }
@@ -106,7 +107,7 @@ class GraphMatrix : public Graph<Tv, Te>{
         return vBak;
     }
 
-    virtual bool exists(int i, int j){
+    virtual bool exists(int i, int j){// 边(i, j)是否存在
         return (0 <= i) && (i < n) && (0 <= j) && (j < n) && E[i][j] != NULL;
     }
 
@@ -143,3 +144,39 @@ class GraphMatrix : public Graph<Tv, Te>{
     }
 
 };
+
+template <typename Tv, typename Te>
+void Graph<Tv, Te>::bfs(int s){//广度优先搜索BFS算法 全图 
+    reset();
+    int clock = 0;
+    int v = s;
+    do{//逐一检查所有顶点
+        if(UNDISCOVERED == status(v)){
+            BFS(v, clock);
+        }
+    }while(s != (v=(++v%n)));//按序号检查故不重不漏
+}
+
+template <typename Tv, typename Te>
+void Graph<Tv, Te>::BFS(int v, int& clock){//广度优先搜索BFS算法 单个连通域 
+    Queue<int> Q;
+    status(v) = DISCOVERED;
+    Q.enqueue(v);
+
+    while(!Q.empty()){
+        int v = Q.dequeue();
+        dTime(v) = ++clock;
+        for(int u = firstNbr(v); -1 < u; u = nextNbr(v, u)){
+            if(UNDISCOVERED == status(u)){
+                status(u) = DISCOVERED;
+                Q.enqueue(u);
+                type(v, u) = TREE;
+                parent(u) = v;
+            }else{
+                type(v, u) = CROSS;
+            }
+        }
+        status(v) = VISITED;
+    }
+
+}
