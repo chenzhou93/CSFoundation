@@ -175,3 +175,34 @@ Stack<Tv>* Graph<Tv, Te>::tSort(int s){
     }while(s != (v=(++v%n)));
     return S;
 }
+
+template <typename Tv, typename Te> template <typename PU>//优先级搜索 全图 
+void Graph<Tv, Te>::pfs (int s, PU prioUpdater) { 
+    reset(); int v = s; 
+    do{//逐一检查所有顶点
+        if (UNDISCOVERED == status (v)){//一旦遇到尚未发现的顶点
+            PFS (v, prioUpdater); //即从该顶点出发启动一次PFS
+        }
+    }while (s != (v = (++v % n))); 
+}
+
+template <typename Tv, typename Te> template <typename PU>//顶点类型、边类型、优先级更新器
+void Graph<Tv, Te>::PFS ( int s, PU prioUpdater ) {
+    priority ( s ) = 0; status ( s ) = VISITED; parent ( s ) = -1;//初始化，起点s加入pfs树中
+    while ( 1 ) {//将下一顶点和边加入PFS树中
+        for ( int w = firstNbr ( s ); -1 < w; w = nextNbr ( s, w ) ){//枚举s所有的邻居w
+            prioUpdater ( this, s, w );//更新顶点w的优先级及其父亲顶点
+        }
+        for ( int shortest = INT_MAX, w = 0; w < n; w++ ){
+            if ( UNDISCOVERED == status ( w ) ){//从尚未加入遍历树的顶点中选出下一个
+                if ( shortest > priority ( w ) ){
+                    shortest = priority ( w ); 
+                    s = w;//优先级最高顶点s
+                }
+            }
+        }
+        if ( VISITED == status ( s ) ) break;//直至所有顶点均已加入
+        status ( s ) = VISITED; 
+        type ( parent ( s ), s ) = TREE;//将s及与其父节点的联边加入遍历树
+    }
+}//通过定义具体的优先级更新策略 prioUpdater 即可实现不同的算法功能
