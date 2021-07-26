@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 
 using namespace std;
 
@@ -6,6 +7,13 @@ struct LightHouse{
     int x;
     int y;
 };
+
+//Reference: https://www.cplusplus.com/reference/cstdlib/qsort/
+int compare (const void * a, const void * b){
+    LightHouse* a1 = (LightHouse*)a;
+    LightHouse* b1 = (LightHouse*)b;
+    return ( a1->x - b1->x );
+}
 
 int invBetween(LightHouse* lights, int left, int mid, int right){
     int la = mid-left;
@@ -33,6 +41,9 @@ int main(){
     for(int i=0; i<n; i++){
         cin >> lights[i].x >> lights[i].y;
     }
+
+    qsort(lights, n, sizeof(LightHouse), compare);
+    
 
     delete[] lights;
     return 0;
