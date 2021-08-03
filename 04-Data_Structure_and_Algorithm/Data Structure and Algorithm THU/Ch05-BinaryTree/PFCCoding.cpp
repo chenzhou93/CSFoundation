@@ -1,7 +1,7 @@
 #include <iostream>
 #include "BinTree.h"
 #include "../Ch02-Vector/Bitmap.h"
-#include "../Ch02-Vector/Vector.h"
+// #include "../Ch02-Vector/Vector.h"
 #include "../SkipList.h" //in chapter 9
 
 using namespace std;
