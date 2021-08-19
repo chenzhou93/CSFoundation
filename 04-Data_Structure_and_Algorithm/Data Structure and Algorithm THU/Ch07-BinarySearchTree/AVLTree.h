@@ -13,7 +13,7 @@
         stature((x)->lc) < stature((x)->rc) ? (x)->rc : \
         IsLChild(*(x)) ? (x)->lc : (x)->rc) \
     ) \
-)
+) 
 
 template <typename T>
 class AVL: public BST<T>{
