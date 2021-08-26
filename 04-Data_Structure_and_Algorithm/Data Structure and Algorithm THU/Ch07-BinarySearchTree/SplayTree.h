@@ -78,3 +78,75 @@ BinNodePosi(T) Splay<T>::splay(BinNodePosi(T) v){
     v->parent = NULL;
     return v;
 }
+
+template <typename T>
+BinNodePosi(T)& Splay<T>::search(const T& e){
+    BinNodePosi p = searchIn(_root, e, _hot=NULL);//searchIn 二叉树通用算法
+    _root = splay(p ? p : _hot);
+    return _root;
+}
+
+template <typename T>
+BinNodePosi(T) Splay<T>::insert(const T& e){
+    if(!_root){
+        _size++;
+        return _root = new BinNode<T>(e);
+    }
+    if(e == search(e)->data){
+        return _root;
+    }
+    _size++;
+    BinNodePosi(T) t = _root;
+    if(_root->data < e){
+        t->parent = _root = new BinNode<T>(e, NULL, t, t->rc);
+        if(HasRChild(*t)){
+            t->rc->parent = _root;
+            t->rc = NULL;
+        }
+    }else{
+        t->parent = _root = new BinNode<T>(e, NULL, t->lc, t);
+        if(HasLChild(*t)){
+            t->lc->parent = _root;
+            t->lc = NULL;
+        }
+    }
+    updateHeightAbove(t);
+    return _root;
+}
+
+template <typename T>
+bool Splay<T>::remove(const T& e){
+    if(!_root || (e != search(e)->data)){
+        return false;
+    }
+    BinNodePosi(T) w = _root;
+    if(!HasLChild(*root)){//若无左子树 则直接删除
+        _root = _root->rc;
+        if(_root){
+            _root->parent = NULL;
+        }
+    }else if(!HasRChild(*_root)){//若无右子树 则直接删除
+        _root = _root->lc;
+        if(_root){
+            _root->parent = NULL;
+        }
+    }else{
+        BinNodePosi(T) lTree = _root->lc;
+        lTree->parent = NULL;
+        _root->lc = NULL;
+        _root = _root->lc;
+        _root->parent = NULL;
+
+        search(w->data);//以原树根为目标，做一次必定失败的查找
+        //至此，右子树中最小节点必伸展至根， 且因无雷同节点其左子树必空
+        _root->lc = lTree;//只需要将左子树接回原位即可
+        lTree->parent = _root;
+    }
+    release(w->data);
+    release(w);
+    _size--;
+    if(_root){
+        updateHeight(_root);
+    }
+    return true;
+}
