@@ -95,3 +95,34 @@ void BTree<T>::solveOverflow(BTNodePosi(T) v){
     solveOverflow(p);
 
 }
+
+template <typename T>
+void BTree<T>::solveOverflow(BTNodePosi(T) v){ //关键码插入后若节点上溢，则做节点分裂处理
+    if(_order >= v->child.size()){
+        return;
+    }
+    Rank s = _order/2;
+    BTNodePosi(T) u = new BTNode<T>();
+    for(Rank j=0; j<_order-s-1; j++){//v右侧_order-s-1个孩子及关键码分裂为右侧节点u
+        u->child.insert(j, v->child.remove(s+1));
+        u->key.insert(j, v->key.remove(s+1));
+    }
+    u->child[_order-s-1] = v->child.remove(s+1);
+
+    if(u->child[0]){
+        for(Rank j=0; j<_order-s; j++){
+            u->child[j]->parent = u;
+        }
+    }
+    BTNodePosi(T) p = v->parent;
+    if(!p){//若u的孩子们非空，则令它们的父节点统一
+        _root = p = new BTNode<T>();
+        p->child[0] = v;
+        v->parent = p;
+    }
+    Rank r = 1 + p->key.search(v->key[0]);//p中指向u的指针的秩
+    p->key.insert(r, v->key.remove(s));//轴点关键码上升
+    p->child.insert(r+1, u);
+    u->parent = p; //新节点u与父节点p互联
+    solveOverflow(p);
+}
