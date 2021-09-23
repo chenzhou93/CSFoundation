@@ -126,3 +126,27 @@ void BTree<T>::solveOverflow(BTNodePosi(T) v){ //关键码插入后若节点上�
     u->parent = p; //新节点u与父节点p互联
     solveOverflow(p);
 }
+
+template <typename T>
+bool BTree<T>::remove(const T& e){
+    BTNodePosi(T) v = search(e);
+    if(!v){
+        return false;
+    }
+    Rank r = v->key.search(e);
+    if(v->child[0]){//若v非叶子，则e的后继必属于某叶节点
+        BTNodePosi(T) u = v->child[r+1];//在右子树中一直向左，即可
+        while(u->child[0]){
+            u = u->child[0];//找出e的后继
+            //并与之交换位置
+            v->key[r] = u->key[0];
+            v = u;
+            r = 0;
+        }//至此，v必然位于最底局，且其中第r个关键码就是待删除者
+    }
+    v->key.remove(r);
+    v->child.remove(r+1);
+    _size--;
+    solveUnderflow(v);
+    return true;
+}
